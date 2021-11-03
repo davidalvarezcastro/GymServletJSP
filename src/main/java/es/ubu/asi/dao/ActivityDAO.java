@@ -1,0 +1,223 @@
+/**
+ * 
+ */
+package es.ubu.asi.dao;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import es.ubu.asi.database.Database;
+import es.ubu.asi.model.Activity;
+
+/**
+ * @author david {dac1005@alu.ubu.es}
+ */
+public class ActivityDAO {
+	private static Database db;
+	
+	static {
+		db = Database.getInstance();
+	}
+
+	// methods
+	/**
+	 * Permite insertar una actividad en la base de datos
+	 *
+	 * @param e	datos de la actividad
+	 * @throws Exception
+	 */
+	public static void add(Activity f) throws Exception {
+		Connection conn = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			conn = db.getConnection();
+			String query = "INSERT INTO actividades"
+					+ "(titulo, descripcion, recomendaciones, docentes, dias, horario, fechaInicio, fechaFin) VALUES"
+					+ "(?,?,?,?,?,?,?,?)";
+			preparedStatement = conn.prepareStatement(query);
+			preparedStatement.setString(1, f.getTitle());
+			preparedStatement.setString(2, f.getDescription());
+			preparedStatement.setString(3, f.getSuggestions());
+			preparedStatement.setString(4, f.getTeachers());
+			preparedStatement.setString(5, f.getDays());
+			preparedStatement.setString(6, f.getSchedule());
+			preparedStatement.setDate(7, new Date(f.getDateStart().getTime()));
+			preparedStatement.setDate(8, new Date(f.getDateStart().getTime()));
+			preparedStatement.executeUpdate();
+		} catch (SQLException ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException ex2) {
+				throw new Exception("Rooling back query error", ex2);
+			}
+			throw new Exception("General SQL error", ex);
+		} finally {
+			close(preparedStatement);
+			close(conn);
+		}
+	}
+
+	/**
+	 * Permite insertar una actividad en la base de datos
+	 *
+	 * @param e	datos de la actividad
+	 * @throws Exception
+	 */
+	public static void update(Activity f) throws Exception {
+		Connection conn = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			conn = db.getConnection();
+			String query = "UPDATE actividades"
+					+ " SET titulo = ?, descripcion = ?, recomendaciones = ?, docentes = ?, dias = ?, horario = ?, fechaInicio = ?, fechaFin = ?"
+					+ " WHERE id = ?";
+			preparedStatement = conn.prepareStatement(query);
+			preparedStatement.setString(1, f.getTitle());
+			preparedStatement.setString(2, f.getDescription());
+			preparedStatement.setString(3, f.getSuggestions());
+			preparedStatement.setString(4, f.getTeachers());
+			preparedStatement.setString(5, f.getDays());
+			preparedStatement.setString(6, f.getSchedule());
+			preparedStatement.setDate(7, new Date(f.getDateStart().getTime()));
+			preparedStatement.setDate(8, new Date(f.getDateStart().getTime()));
+			preparedStatement.setLong(9, f.getId());
+			preparedStatement.executeUpdate();
+		} catch (SQLException ex) {
+			try {
+				conn.rollback();
+			} catch (SQLException ex2) {
+				throw new Exception("Rooling back query error", ex2);
+			}
+			throw new Exception("General SQL error", ex);
+		} finally {
+			close(preparedStatement);
+			close(conn);
+		}
+	}
+
+	/**
+	 * Permite conectarse a la db y obtener el listado de actividades almacenadas
+	 *
+	 * @return listado de las actividades
+	 * @throws Exception
+	 */
+	public static List<Activity> getActivities() throws Exception {
+		String query = "SELECT * FROM actividades";
+		List<Activity> list = new ArrayList<Activity>();
+
+		try (Connection conn = db.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                long id = resultSet.getLong("id");
+                String title = resultSet.getString("titulo");
+                String description = resultSet.getString("descripcion");
+                String suggestions = resultSet.getString("recomendaciones");
+                String teachers = resultSet.getString("docentes");
+                String days = resultSet.getString("dias");
+                String schedule = resultSet.getString("horario");
+                java.util.Date dateS = resultSet.getDate("fechaInicio");
+                java.util.Date dateE = resultSet.getDate("fechaFin");
+                list.add(new Activity(id, title, description, suggestions, teachers, days, schedule, dateS, dateE));
+            }
+        
+            return list;
+        } catch (SQLException e) {
+        	throw new Exception("General SQL error", e);
+        } catch (Exception e) {
+        	throw new Exception(e);
+        }
+	}
+	
+
+	/**
+	 * Permite conectarse a la db y obtener información de la actividad
+	 *
+	 * @param activity identificador de la actividad
+	 * @return información de la actividad
+	 * @throws Exception
+	 */
+	public static Activity getActivity(String activity) throws Exception {
+		String query = "SELECT * FROM actividades WHERE id = ? LIMIT 1";
+		Activity a = null;
+
+		try (Connection conn = db.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+			preparedStatement.setString(1, activity);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                long id = resultSet.getLong("id");
+                String title = resultSet.getString("titulo");
+                String description = resultSet.getString("descripcion");
+                String suggestions = resultSet.getString("recomendaciones");
+                String teachers = resultSet.getString("docentes");
+                String days = resultSet.getString("dias");
+                String schedule = resultSet.getString("horario");
+                java.util.Date dateS = resultSet.getDate("fechaInicio");
+                java.util.Date dateE = resultSet.getDate("fechaFin");
+                a = new Activity(id, title, description, suggestions, teachers, days, schedule, dateS, dateE);
+            }
+        
+            return a;
+        } catch (SQLException e) {
+        	throw new Exception("General SQL error", e);
+        } catch (Exception e) {
+        	throw new Exception(e);
+        }
+	}
+	
+
+	/**
+	 * Permite eliminar una actividad de la base de datos
+	 *
+	 * @param activity identificador de la actividad
+	 * @return indica si se ha borrado el registro
+	 * @throws Exception
+	 */
+	public static boolean deleteActivity(String activity) throws Exception {
+		String query = "DELETE FROM actividades WHERE id = ?";
+
+		try (Connection conn = db.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+			preparedStatement.setString(1, activity);
+
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+        	throw new Exception("General SQL error", e);
+        } catch (Exception e) {
+        	throw new Exception(e);
+        }
+	}
+
+	// handle connections
+	private static void close(Statement st) throws Exception {
+		if (st != null) {
+			try {
+				st.close();
+			} catch (SQLException ex) {
+				throw new Exception("", ex);
+			}
+		}
+	}
+
+	private static void close(Connection con) throws Exception {
+		if (con != null) {
+			try {
+				db.close(con);
+			} catch (SQLException ex) {
+				throw new Exception("", ex);
+			}
+		}
+	}
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>actividades</display-name>
+  <filter>
+    <filter-name>SessionFilter</filter-name>
+    <filter-class>
+		es.ubu.asi.filters.SessionFilter
+	</filter-class>
+    <init-param>
+      <param-name>avoid-urls</param-name>
+      <param-value>index.jsp,/index.jsp,login.jsp,/login.jsp,/login,login</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>SessionFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+</web-app>

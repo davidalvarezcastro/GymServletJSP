@@ -1,0 +1,49 @@
+@charset "UTF-8";
+@import "buttons.css";
+@import "forms.css";
+@import "menu.css";
+@import "tables.css";
+
+body {
+	width: 80%;
+	margin: 0 auto;
+}
+
+.app {
+	padding: 10px 20px;
+}
+
+.center {
+	margin: 0 auto;
+	/* text-align:center; */
+}
+
+.content {
+	padding: 5px 0;
+	margin: 15px 0;
+	border-top: 2px solid lightgrey;
+}
+
+.aditionals {
+	display: flex;
+	justify-content: end;
+}
+
+h1.title {
+	text-align: center;
+}
+
+
+.hide-element {
+	display: none
+}
+
+.error_msg {
+	color: red;
+	font-weight: bolder;
+}
+
+.success_msg {
+	color: green;
+	font-weight: bolder;
+}
