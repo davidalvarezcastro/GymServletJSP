@@ -55,7 +55,7 @@ public class LogoutController extends HttpServlet {
 			logger.error(e.getMessage());
 		}
 
-		request.getRequestDispatcher("index.jsp").forward(request, response);
+		response.sendRedirect(request.getContextPath() + "/index.jsp");
 	}
 
 }

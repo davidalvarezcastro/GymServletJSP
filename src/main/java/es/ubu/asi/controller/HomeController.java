@@ -33,9 +33,9 @@ public class HomeController extends HttpServlet {
 		String username = (String) session.getAttribute("user");
 		
 		if (username == null) {
-			request.getRequestDispatcher("login.jsp").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/login.jsp");
 		} else {
-			request.getRequestDispatcher("home.jsp").forward(request, response);
+			response.sendRedirect(request.getContextPath() + "/home.jsp");
 		}
 	}
 
