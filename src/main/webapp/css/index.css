@@ -47,3 +47,21 @@ h1.title {
 	color: green;
 	font-weight: bolder;
 }
+
+.file-list {
+	padding: 15px;
+	max-height: 250px;
+	overflow: auto;
+}
+
+.align-right {
+	text-align: right;
+}
+
+.flex {
+	display: flex;
+}
+
+.flex.space-between {
+	justify-content: space-between;
+}

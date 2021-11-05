@@ -31,7 +31,7 @@ select {
 	border-radius: 4px;
 }
 
-.form input[type=text], .form input[type=password], .form input[type=submit], .form input[type=reset], .form input[type=time] {
+.form input[type=text], .form input[type=password], .form input[type=submit], .form input[type=reset], .form input[type=time], .form input[type=file] {
   width: 100%;
   padding: 10px 28px;
   margin: 8px 0;

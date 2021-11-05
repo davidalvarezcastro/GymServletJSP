@@ -14,6 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.ubu.asi.controller.LoginController;
+
 /**
  * @author david {dac1005@alu.ubu.es}
  *
@@ -22,6 +27,7 @@ import javax.servlet.http.HttpSession;
 public class SessionFilter implements Filter {
 
 	private ArrayList<String> urlList;
+	private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	public void destroy() {
 	}
@@ -33,24 +39,25 @@ public class SessionFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) res;
 		String url = request.getServletPath();
 		boolean allowedRequest = false;
-		
+
+		logger.debug("pagina solicitada: " + url);
+
 		if(urlList.contains(url) || url.contains("/css/") || url.contains("/js/")) {
 			allowedRequest = true;
 		}
-		
-		System.out.println(url);
-		System.out.println(allowedRequest);
 			
 		if (!allowedRequest) {
 			HttpSession session = request.getSession(true);
 			String username = (String) session.getAttribute("user");
 			if (username == null) {
-				System.out.println("redirigiendo a la página de login");
+				logger.debug("redirigiendo a la página de login");
 				response.sendRedirect(request.getContextPath() + "/login.jsp");
 			}
 		}
-		
-		chain.doFilter(req, res);
+
+		try {
+			chain.doFilter(req, res);
+		} catch (Exception e) {}  
 	}
 
 	public void init(FilterConfig config) throws ServletException {

@@ -46,11 +46,7 @@ public class Database {
 			return database;
 		}		
 	}
-	
-	private DataSource getDataSource(){
-		return ds;
-	}
-	
+
 	public Connection getConnection() throws SQLException{
 		return ds.getConnection();		
 	}

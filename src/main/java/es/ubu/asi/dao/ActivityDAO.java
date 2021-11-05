@@ -12,6 +12,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.ubu.asi.controller.LoginController;
 import es.ubu.asi.database.Database;
 import es.ubu.asi.model.Activity;
 
@@ -20,6 +24,7 @@ import es.ubu.asi.model.Activity;
  */
 public class ActivityDAO {
 	private static Database db;
+	private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	static {
 		db = Database.getInstance();
@@ -30,17 +35,20 @@ public class ActivityDAO {
 	 * Permite insertar una actividad en la base de datos
 	 *
 	 * @param e	datos de la actividad
+	 * @return identificador de la actividad insertada
 	 * @throws Exception
 	 */
-	public static void add(Activity f) throws Exception {
+	public static long add(Activity f) throws Exception {
 		Connection conn = null;
 		PreparedStatement preparedStatement = null;
+		long idValue = -1;
+
 		try {
 			conn = db.getConnection();
 			String query = "INSERT INTO actividades"
 					+ "(titulo, descripcion, recomendaciones, docentes, dias, horario, fechaInicio, fechaFin) VALUES"
 					+ "(?,?,?,?,?,?,?,?)";
-			preparedStatement = conn.prepareStatement(query);
+			preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS); // obtener el id de la actividad creada
 			preparedStatement.setString(1, f.getTitle());
 			preparedStatement.setString(2, f.getDescription());
 			preparedStatement.setString(3, f.getSuggestions());
@@ -48,9 +56,16 @@ public class ActivityDAO {
 			preparedStatement.setString(5, f.getDays());
 			preparedStatement.setString(6, f.getSchedule());
 			preparedStatement.setDate(7, new Date(f.getDateStart().getTime()));
-			preparedStatement.setDate(8, new Date(f.getDateStart().getTime()));
+			preparedStatement.setDate(8, new Date(f.getDateEnd().getTime()));
 			preparedStatement.executeUpdate();
+			
+			ResultSet rs = preparedStatement.getGeneratedKeys();
+
+			if (rs.next()) {
+				idValue = rs.getInt(1);
+			}
 		} catch (SQLException ex) {
+			logger.error(ex.getMessage());
 			try {
 				conn.rollback();
 			} catch (SQLException ex2) {
@@ -61,10 +76,11 @@ public class ActivityDAO {
 			close(preparedStatement);
 			close(conn);
 		}
+		return idValue;
 	}
 
 	/**
-	 * Permite insertar una actividad en la base de datos
+	 * Permite actualizar la información de una actividad en la base de datos
 	 *
 	 * @param e	datos de la actividad
 	 * @throws Exception
@@ -89,6 +105,7 @@ public class ActivityDAO {
 			preparedStatement.setLong(9, f.getId());
 			preparedStatement.executeUpdate();
 		} catch (SQLException ex) {
+			logger.error(ex.getMessage());
 			try {
 				conn.rollback();
 			} catch (SQLException ex2) {
@@ -129,6 +146,7 @@ public class ActivityDAO {
         
             return list;
         } catch (SQLException e) {
+        	logger.error(e.getMessage());
         	throw new Exception("General SQL error", e);
         } catch (Exception e) {
         	throw new Exception(e);
@@ -167,6 +185,7 @@ public class ActivityDAO {
         
             return a;
         } catch (SQLException e) {
+        	logger.error(e.getMessage());
         	throw new Exception("General SQL error", e);
         } catch (Exception e) {
         	throw new Exception(e);
@@ -194,6 +213,7 @@ public class ActivityDAO {
                 return false;
             }
         } catch (SQLException e) {
+        	logger.error(e.getMessage());
         	throw new Exception("General SQL error", e);
         } catch (Exception e) {
         	throw new Exception(e);

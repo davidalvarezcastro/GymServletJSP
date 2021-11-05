@@ -12,6 +12,12 @@
   /* background-color: #333; */
 }
 
+.menu ul div.long-text {
+  list-style-type: none;
+  overflow: auto;
+  /* background-color: #333; */
+}
+
 .menu li {
   float: left;
   padding: 14px 0;

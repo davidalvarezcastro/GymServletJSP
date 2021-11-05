@@ -18,3 +18,22 @@ function gestionar_visualizar_ficheros (actividad) {
 		ficheros_dom.classList.add(HIDE_ELEMENT_CLASS)
 	}
 }
+
+/**
+ * Función para duplicar un grupo de DOM elements (inputs ficheros)
+ *
+ * @returns
+ */
+function anhadir_fichero () {
+	let ficheros_dom = document.getElementById('new_files')
+	let domElement = document.getElementsByClassName('add-file')[0]
+	
+	let clon = domElement.cloneNode("add-file")
+	let inputs = clon.getElementsByTagName('input')
+	for (var i=0, max=inputs.length; i < max; i++) {
+		inputs[i].value = "";
+	}
+
+	ficheros_dom.appendChild(clon);
+}
+

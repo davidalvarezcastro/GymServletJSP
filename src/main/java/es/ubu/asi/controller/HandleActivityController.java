@@ -1,6 +1,8 @@
 package es.ubu.asi.controller;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,7 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import es.ubu.asi.dao.ActivityDAO;
+import es.ubu.asi.dao.FileDAO;
 import es.ubu.asi.model.Activity;
+import es.ubu.asi.model.File;
+import es.ubu.asi.utils.FileSystem;
 
 /**
  * @author david {dac1005@alu.ubu.es}
@@ -38,12 +43,14 @@ public class HandleActivityController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String action = null, error = "";
-		
+		String action = null, error = null;
+
 		try {
 			action = request.getParameter("method");
-			System.out.println(action);
+			if (action == null) {
+				action = ""; // desencadena la opción por defecto
+			}
+
 			switch (action) {
 			case "update":
 			case "delete":
@@ -53,20 +60,29 @@ public class HandleActivityController extends HttpServlet {
 				
 				// redirección a la página de gestión o eliminación de actividades (por consiguiente, ficheros asociados)
 				if (action.equals("update")) {
+					List<File> files = FileDAO.getFiles(a.getId());
+
 					request.setAttribute("activity", a);
+					request.setAttribute("files", files);
 					request.getRequestDispatcher("actividades/gestionar.jsp").forward(request, response);
 				} else {
 					try {
 						if (!ActivityDAO.deleteActivity(activityID)) {
 							error = "Error eliminando la actividad " + activityID;
 						} else {
-							// TODO: eliminar ficheros directorio de ficheros
+							// se eliminan los ficheros del directorio (de la BD es automático)
+							String path = FileSystem.generatePathFiles(this.getServletContext().getRealPath(""), a.getId());
+							FileSystem.removePath(path);
 						}
 					} catch (Exception e) {
 						error = "Error eliminando la actividad " + activityID;
 					}
 
-					request.setAttribute("msg", "Actividad eliminada correctamente!");
+					if (error == null) {
+						request.setAttribute("msg", "Actividad eliminada correctamente!");						
+					} else {
+						request.setAttribute("error", error);
+					}
 					request.getRequestDispatcher("home.jsp").forward(request, response);
 				}
 				break;
@@ -76,9 +92,9 @@ public class HandleActivityController extends HttpServlet {
 				break;
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			System.out.println(e);
+			error = "Error en el controlador de actividades";
+			request.setAttribute("error", error);
+			request.getRequestDispatcher("home.jsp").forward(request, response);
 		}
 	}
-
 }

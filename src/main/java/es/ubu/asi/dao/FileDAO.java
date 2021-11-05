@@ -4,6 +4,7 @@
 package es.ubu.asi.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +12,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.ubu.asi.controller.LoginController;
 import es.ubu.asi.database.Database;
+import es.ubu.asi.model.Activity;
 import es.ubu.asi.model.File;
 
 /**
@@ -19,6 +25,7 @@ import es.ubu.asi.model.File;
  */
 public class FileDAO {
 	private static Database db;
+	private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	static {
 		db = Database.getInstance();
@@ -45,6 +52,7 @@ public class FileDAO {
 			preparedStatement.setLong(3, f.getActivity());
 			preparedStatement.executeUpdate();
 		} catch (SQLException ex) {
+			logger.error(ex.getMessage());
 			try {
 				conn.rollback();
 			} catch (SQLException ex2) {
@@ -55,6 +63,105 @@ public class FileDAO {
 			close(preparedStatement);
 			close(conn);
 		}
+	}
+	
+	/**
+	 * Permite actualizar la información de un fichero
+	 * NOTA: no se considera cambiar de actividad un fichero
+	 *
+	 * @param f	datos del fichero
+	 * @throws Exception
+	 */
+	public static void update(File f) throws Exception {
+		Connection conn = null;
+		PreparedStatement preparedStatement = null;
+		try {
+			conn = db.getConnection();
+			String query = "UPDATE ficheros"
+					+ " SET titulo = ?, ruta = ?"
+					+ " WHERE id = ?";
+			preparedStatement = conn.prepareStatement(query);
+			preparedStatement.setString(1, f.getTitle());
+			preparedStatement.setString(2, f.getRoute());
+			preparedStatement.setLong(3, f.getId());
+			preparedStatement.executeUpdate();
+		} catch (SQLException ex) {
+			logger.error(ex.getMessage());
+			try {
+				conn.rollback();
+			} catch (SQLException ex2) {
+				throw new Exception("Rooling back query error", ex2);
+			}
+			throw new Exception("General SQL error", ex);
+		} finally {
+			close(preparedStatement);
+			close(conn);
+		}
+	}
+	
+	/**
+	 * Permite conectarse a la db y obtener un fichero por id
+	 *
+	 * @param file identificador de fichero
+	 * @return información del fichero
+	 * @throws Exception
+	 */
+	public static File getFile(long fileID) throws Exception {
+		String query = "SELECT * FROM ficheros"
+				+ " WHERE id = ? LIMIT 1";
+		File file = null;
+		
+		try (Connection conn = db.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+			preparedStatement.setLong(1, fileID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String title = resultSet.getString("titulo");
+                String route = resultSet.getString("ruta");
+                long actividad = resultSet.getLong("idActividad");
+                file = new File(fileID, title, route, actividad);
+            }
+        
+            return file;
+        } catch (SQLException e) {
+        	logger.error(e.getMessage());
+        	throw new Exception("General SQL error", e);
+        } catch (Exception e) {
+        	throw new Exception(e);
+        }
+	}
+	
+	/**
+	 * Permite conectarse a la db y obtener un fichero por ruta
+	 *
+	 * @param file identificador de fichero
+	 * @return información del fichero
+	 * @throws Exception
+	 */
+	public static File getFileByRoute(String path) throws Exception {
+		String query = "SELECT * FROM ficheros"
+				+ " WHERE ruta = ? LIMIT 1";
+		File file = null;
+		
+		try (Connection conn = db.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+			preparedStatement.setString(1, path);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+            	long id = resultSet.getLong("id");
+                String title = resultSet.getString("titulo");
+                String route = resultSet.getString("ruta");
+                long actividad = resultSet.getLong("idActividad");
+                file = new File(id, title, route, actividad);
+            }
+        
+            return file;
+        } catch (SQLException e) {
+        	logger.error(e.getMessage());
+        	throw new Exception("General SQL error", e);
+        } catch (Exception e) {
+        	throw new Exception(e);
+        }
 	}
 
 	/**
@@ -83,6 +190,34 @@ public class FileDAO {
         
             return list;
         } catch (SQLException e) {
+        	logger.error(e.getMessage());
+        	throw new Exception("General SQL error", e);
+        } catch (Exception e) {
+        	throw new Exception(e);
+        }
+	}
+	
+	/**
+	 * Permite eliminar un fichero de la base de datos
+	 *
+	 * @param fileID identificador del fichero
+	 * @return indica si se ha borrado el registro
+	 * @throws Exception
+	 */
+	public static boolean deleteFile(long fileID) throws Exception {
+		String query = "DELETE FROM ficheros WHERE id = ?";
+
+		try (Connection conn = db.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+			preparedStatement.setLong(1, fileID);
+
+            if (preparedStatement.executeUpdate() > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+        	logger.error(e.getMessage());
         	throw new Exception("General SQL error", e);
         } catch (Exception e) {
         	throw new Exception(e);

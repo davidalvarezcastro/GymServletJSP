@@ -1,6 +1,7 @@
+<%@page import="java.util.List"%>
 <%@page import="es.ubu.asi.model.File"%>
 <%@page import="es.ubu.asi.model.Activity"%>
-<%@ page import="es.ubu.asi.controller.AddActivityController" %>
+<%@ page import="es.ubu.asi.controller.ActivityController" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -8,6 +9,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@include file="../head.jsp"%>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/index.js"></script>
 <title>Gestionar Actividad</title>
 </head>
 <body>
@@ -19,10 +21,9 @@
 
 		// instancias
 		Activity a = (Activity)request.getAttribute("activity");
-		File f = (File)request.getAttribute("files");
+		List<File> files = (List<File>)request.getAttribute("files");
 
 		// formato
-		String formAction = a != null ? "updateActivity" : "addActivity";
 		String titlePage = a != null ? "Modificar Actividad" : "Nueva Actividad";
 		String submitButton = a != null ? "Modificar" : "Registrar";
     %>
@@ -32,7 +33,7 @@
 			<%= titlePage %>
 		</h1>
 
-  		<form class="form" method="post" action="<%= formAction %>">
+  		<form class="form" method="post" action="activity" enctype="multipart/form-data">
   			<% if(error_msg != null && !error_msg.equals("")) { %>
 			  <p class="error_msg"> <%= error_msg %> <p>
 			<% } %>
@@ -74,13 +75,16 @@
 	  		<div class="group-inline">
 	  			<div>
 	  				<label for="dateStart">Fecha Inicio: </label>
-		  			<input type="date" name="dateStart" value="<%= a != null ? a.getDateStart() : ""%>">
+		  			<input type="date" name="dateStart" value="<%= a != null ? a.getDateStartString() : ""%>">
 	  			</div>
 	  			<div>
 	  				<label for="dateEnd">Fecha Fin: </label>
-		  			<input type="date" name="dateEnd" value="<%= a != null ? a.getDateEnd() : ""%>">
+		  			<input type="date" name="dateEnd" value="<%= a != null ? a.getDateEndString() : ""%>">
 	  			</div>
 	  		</div>
+	  		
+	  		<!-- ZONA ficheros -->
+	  		<%@ include file="gestionar_ficheros.jsp" %>
 
 	  		<input class="btn info" type="reset" value="Reset">
 	        <input class="btn success" type="submit" value="<%= submitButton %>">

@@ -8,6 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import es.ubu.asi.controller.LoginController;
 import es.ubu.asi.database.Database;
 import es.ubu.asi.model.User;
 
@@ -17,6 +21,7 @@ import es.ubu.asi.model.User;
 public class UserDAO {
 
 	private static Database db;
+	private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	static {
 		db = Database.getInstance();
@@ -43,6 +48,7 @@ public class UserDAO {
 			preparedStatement.setString(3, e.getProfile());
 			preparedStatement.executeUpdate();
 		} catch (SQLException ex) {
+			logger.error(ex.getMessage());
 			try {
 				conn.rollback();
 			} catch (SQLException ex2) {
@@ -79,6 +85,7 @@ public class UserDAO {
         
             return list;
         } catch (SQLException e) {
+        	logger.error(e.getMessage());
         	throw new Exception("General SQL error", e);
         } catch (Exception e) {
         	throw new Exception(e);
@@ -105,6 +112,7 @@ public class UserDAO {
 			ResultSet rs = preparedStatement.executeQuery();
             return rs.next() ? true : false;
         } catch (SQLException e) {
+        	logger.error(e.getMessage());
         	throw new Exception("General SQL error ", e);
         } catch (Exception e) {
         	throw new Exception(e);

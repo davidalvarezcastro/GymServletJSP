@@ -21,7 +21,7 @@ public class Activity {
 	private String schedule;
 	private Date dateStart;
 	private Date dateEnd;
-	private DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+	private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	// constructors
 	public Activity() {
@@ -109,6 +109,12 @@ public class Activity {
 	}
 	public void setDateEnd(Date dateEnd) {
 		this.dateEnd = dateEnd;
+	}
+	public String getDateStartString() {
+		return dateFormat.format(dateStart);
+	}
+	public String getDateEndString() {
+		return dateFormat.format(dateEnd);
 	}
 	
 	// methods
