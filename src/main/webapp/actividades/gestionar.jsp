@@ -13,7 +13,7 @@
 <title>Gestionar Actividad</title>
 </head>
 <body>
-
+	<%@include file="../menu.jsp"%>
 	<%
 		// mensajes
 		String error_msg = (String)request.getAttribute("error");
@@ -89,8 +89,6 @@
 	  		<input class="btn info" type="reset" value="Reset">
 	        <input class="btn success" type="submit" value="<%= submitButton %>">
 	  	</form>
-
-	  	<a href="<%= request.getContextPath() %>/home.jsp">Volver a Inicio</a>
   	</div>
 </body>
 </html>

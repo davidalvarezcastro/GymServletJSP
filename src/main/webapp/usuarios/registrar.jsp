@@ -9,6 +9,8 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
   </head>
   <body>
     <% String error_msg = (String)request.getAttribute("error"); %>
+    <%@include file="../menu.jsp"%>
+
     <div class="app">
       <h1 class="title">Nuevo usuario</h1>
 
@@ -34,8 +36,6 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
         <p class="error_form"><%= error_msg %></p>
         <p><% } %></p>
       </form>
-
-      <a href="<%= request.getContextPath() %>/home.jsp">Volver a Inicio</a>
     </div>
   </body>
 </html>

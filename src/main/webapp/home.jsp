@@ -25,7 +25,6 @@
 		String error_msg = (String)request.getAttribute("error");
 	  	String succes_msg = (String)request.getAttribute("msg");
     %>
-	<h1> Sistema de Gestión de Actividades de UBUGym </h1>
 
 	<% if(error_msg != null && !error_msg.equals("")) { %>
 	    <p class="error_msg"> <%= error_msg %> <p>
@@ -36,6 +35,7 @@
 	<% } %>
 
 	<div class="app">
+		<h1> Sistema de Gestión de Actividades de UBUGym </h1>
 		<div class="content">
 			<table border="1">
 				<caption>
@@ -97,10 +97,11 @@
 		         </tr>
 		         <%}%>
 		    </table>
-		</div>
-
-		<div class="content">
-			<a href="<%= request.getContextPath() %>/usuarios/registrar.jsp">Registrar nuevo usuario</a>
+		    <% if(activities.size() == 0) { %>
+				<div style="text-align: center">
+					<p> No hay actividades registradas </p>
+				</div>
+			<% } %>
 		</div>
 	</div>	
 </body>
