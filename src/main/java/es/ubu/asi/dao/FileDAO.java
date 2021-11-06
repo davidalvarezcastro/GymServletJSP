@@ -4,7 +4,6 @@
 package es.ubu.asi.dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import es.ubu.asi.controller.LoginController;
 import es.ubu.asi.database.Database;
-import es.ubu.asi.model.Activity;
 import es.ubu.asi.model.File;
 
 /**

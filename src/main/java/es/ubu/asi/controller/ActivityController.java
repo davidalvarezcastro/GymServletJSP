@@ -125,7 +125,6 @@ public class ActivityController extends HttpServlet {
                 msg = "Actividad creada correctamente!";
             } else {
             	idActivity = Long.parseLong(id);
-            	Activity aux = ActivityDAO.getActivity(id);
             	a = new Activity(idActivity, title, description, suggestions, teachers, days, schedule, format.parse(dateStart), format.parse(dateEnd));
             	// se actualiza la actividad en la base de datos
                 ActivityDAO.update(a);
