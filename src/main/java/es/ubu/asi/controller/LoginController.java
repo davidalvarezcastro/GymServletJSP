@@ -46,11 +46,11 @@ public class LoginController extends HttpServlet {
 		response.setContentType("text/html;charset=UTF-8");
 
 		boolean error = false;
-		String msg = null;
+		String msg = null, login = null, password = null;
 
 		try {
-			String login = request.getParameter("login");
-			String password = request.getParameter("password");
+			login = request.getParameter("login");
+			password = request.getParameter("password");
 			
 			if(login.equals("") || password.equals("")) {
 				msg = (login.equals("")) ? "Nombre de usuario vacío" : "Contraseña vacía";
@@ -77,7 +77,7 @@ public class LoginController extends HttpServlet {
 			request.getRequestDispatcher("login.jsp").forward(request, response);
 		} else {
 			RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
-			request.getSession(true).setAttribute("user", "david");
+			request.getSession(true).setAttribute("user", login);
 			rd.forward(request, response);
 		}
 	}
